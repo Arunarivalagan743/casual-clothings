@@ -97,6 +97,36 @@ export const onlinePaymentOrderController = async (req, res) => {
     const userId = req.userId;
     const { list_items, totalAmount, addressId, subTotalAmt, quantity, paymentMethod, deliveryCharge, deliveryDistance, estimatedDeliveryDate, deliveryDays } = req.body;
 
+    console.log("=== ORDER CONTROLLER DEBUG START ===");
+    console.log("userId:", userId);
+    console.log("req.body:", JSON.stringify(req.body, null, 2));
+    console.log("=== ORDER CONTROLLER DEBUG END ===");
+
+    // Validate required fields
+    if (!list_items || !Array.isArray(list_items) || list_items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: "Order must contain at least one item"
+      });
+    }
+
+    if (!totalAmount || totalAmount <= 0) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: "Invalid total amount"
+      });
+    }
+
+    if (!addressId) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: "Delivery address is required"
+      });
+    }
+
     // Get user details for email
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -207,9 +237,18 @@ export const onlinePaymentOrderController = async (req, res) => {
           });
         }
         
+        // Ensure product has required fields to prevent null reference errors
+        if (!product.name) {
+          return res.status(400).json({
+            success: false,
+            error: true,
+            message: `Product data is incomplete for product ID: ${productId}`
+          });
+        }
+        
         // Check size-specific inventory if size is provided
         if (item.size) {
-          const sizeInventory = product.sizes?.[item.size] || 0;
+          const sizeInventory = (product.sizes && product.sizes[item.size]) ? product.sizes[item.size] : 0;
           if (sizeInventory < item.quantity) {
             return res.status(400).json({
               success: false,
@@ -219,7 +258,7 @@ export const onlinePaymentOrderController = async (req, res) => {
           }
         } 
         // Fallback to legacy stock check
-        else if (product.stock < item.quantity) {
+        else if ((product.stock || 0) < item.quantity) {
           return res.status(400).json({
             success: false,
             error: true,
@@ -253,14 +292,28 @@ export const onlinePaymentOrderController = async (req, res) => {
     }
 
     // Create single order payload with all items
-    const orderId = `ORD-${new mongoose.Types.ObjectId()}`;
+    let orderId;
+    try {
+      orderId = `ORD-${new mongoose.Types.ObjectId()}`;
+    } catch (error) {
+      console.error("Error generating order ID:", error);
+      return res.status(500).json({
+        success: false,
+        error: true,
+        message: "Failed to generate order ID",
+        details: error.message
+      });
+    }
     
-    // Set default delivery charge if not provided
-    const defaultDeliveryCharge = parseInt(process.env.DEFAULT_DELIVERY_CHARGE) || 100;
-    const finalDeliveryCharge = deliveryCharge || defaultDeliveryCharge;
+    // Set default delivery charge to 80
+    const defaultDeliveryCharge = 80; // Default delivery charge
     
-    // Calculate final total amount including delivery charge
-    const finalTotalAmount = totalAmount + (finalDeliveryCharge - (deliveryCharge || 0));
+    // Always use the default delivery charge, ignore frontend value
+    const finalDeliveryCharge = defaultDeliveryCharge;
+    
+    // Calculate final total amount properly
+    // Always add the delivery charge to ensure it's included
+    const finalTotalAmount = totalAmount + defaultDeliveryCharge;
     
     console.log(`📦 Delivery Charge Calculation:
       - Original Delivery Charge: ₹${deliveryCharge || 0}
@@ -747,11 +800,20 @@ export const onlinePaymentOrderController = async (req, res) => {
         // Don't fail the order if email fails
       }
 
+      // Return order data in Razorpay-compatible format with delivery charge included
       return res.json({
         message: "Order placed successfully",
         error: false,
         success: true,
-        data: generatedOrder[0], // Return single order instead of array
+        data: {
+          // Return order data in format expected by frontend
+          orderId: generatedOrder[0].orderId,
+          amount: finalTotalAmount * 100, // Convert to paisa for Razorpay compatibility
+          currency: "INR",
+          receipt: generatedOrder[0].orderId,
+          // Include the actual order data
+          orderData: generatedOrder[0]
+        }
       });
 
     } catch (transactionError) {
@@ -773,7 +835,7 @@ export const onlinePaymentOrderController = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: true,
-      message: "Error in cash payment controller",
+      message: "Error in online payment controller",
       details: error.message,
     });
   }
@@ -1872,3 +1934,13 @@ export const updateDeliveryDateController = async (req, res) => {
         });
     }
 }
+
+
+
+
+
+
+
+
+
+
