@@ -127,6 +127,23 @@ export const onlinePaymentOrderController = async (req, res) => {
       });
     }
 
+    // Validate and sanitize deliveryDistance
+    let sanitizedDeliveryDistance = 0;
+    if (deliveryDistance !== undefined && deliveryDistance !== null) {
+      if (typeof deliveryDistance === 'string') {
+        // Handle string values like "Standard", convert to 0
+        if (deliveryDistance.toLowerCase() === 'standard' || deliveryDistance === '') {
+          sanitizedDeliveryDistance = 0;
+        } else {
+          const parsed = parseFloat(deliveryDistance);
+          sanitizedDeliveryDistance = isNaN(parsed) ? 0 : parsed;
+        }
+      } else if (typeof deliveryDistance === 'number') {
+        sanitizedDeliveryDistance = deliveryDistance;
+      }
+    }
+    console.log(`Delivery distance sanitized: ${deliveryDistance} -> ${sanitizedDeliveryDistance}`);
+
     // Get user details for email
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -618,7 +635,7 @@ export const onlinePaymentOrderController = async (req, res) => {
       totalQuantity: quantity, // Total quantity of all items
       orderDate: new Date(),
       estimatedDeliveryDate: estimatedDeliveryDate ? new Date(estimatedDeliveryDate) : calculateEstimatedDeliveryDate(),
-      deliveryDistance: deliveryDistance || 0,
+      deliveryDistance: sanitizedDeliveryDistance,
       deliveryDays: deliveryDays || 0,
       deliveryCharge: finalDeliveryCharge, // Use calculated delivery charge
       paymentStatus: "PAID", // Always PAID for online payments
