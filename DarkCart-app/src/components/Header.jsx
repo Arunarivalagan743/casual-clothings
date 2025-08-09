@@ -7,6 +7,7 @@ import { BsCartCheckFill } from "react-icons/bs";
 import { useSelector, useDispatch } from "react-redux";
 import { GoTriangleDown, GoTriangleUp } from "react-icons/go";
 import UserMenue from "./UserMenue";
+import AdminMenue from "./AdminMenue";
 import { DisplayPriceInRupees } from "../utils/DisplayPriceInRupees";
 import { useGlobalContext } from "../provider/GlobalProvider";
 import isAdmin from "../utils/isAdmin";
@@ -567,7 +568,7 @@ function Header() {
               {/* Mobile & Tablet Actions - Icon Only for Cleaner Layout (visible up to xl breakpoint) */}
               <div className="xl:hidden flex items-center gap-2.5 sm:gap-3 md:gap-3.5">
                 {/* Cart Button for Mobile/Tablet - Premium Styled */}
-                {user?._id && (
+                {user?._id && !isAdmin(user.role) && (
                   <button
                     className="relative p-2.5 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-black transition-all duration-300 rounded-full group"
                     onClick={() => setOpenCartSection(true)}
@@ -700,7 +701,7 @@ function Header() {
                       )}
                       
                       {/* Wishlist - Mobile (only when logged in) with Premium Styling */}
-                      {user?.name && (
+                      {user?.name && !isAdmin(user.role) && (
                         <div>
                            <Link
                           to="/dashboard/wishlist"
@@ -785,28 +786,148 @@ function Header() {
                         </div>
                       )}
 
-                      {/* Admin Dashboard - Mobile (only for admin users) with Premium Styling */}
+                      {/* Admin Panel - Mobile (only for admin users) with Premium Styling */}
                       {user?.name && isAdmin(user.role) && (
-                        <Link
-                          to="/dashboard/admin"
-                          className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
-                          onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
-                          style={{ 
-                            fontFamily: "'Inter', sans-serif",
-                            fontWeight: '300',
-                            letterSpacing: '0.03em',
-                          }}
-                        >
-                          <div className="flex items-center gap-3 w-full">
-                            <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                            <div className="flex flex-col">
-                              <span className="tracking-wide">Admin Dashboard</span>
-                              <span className="text-xs text-gray-500">Manage your store</span>
-                            </div>
+                        <div>
+                          <div className="px-3 py-2 border-b border-gray-100 mb-1">
+                            <p 
+                              className="text-xs text-gray-500 uppercase tracking-wider"
+                              style={{ 
+                                fontFamily: "'Inter', sans-serif",
+                                fontWeight: '400',
+                                letterSpacing: '0.08em',
+                              }}
+                            >
+                              Admin Panel
+                            </p>
                           </div>
-                        </Link>
+
+                          <Link
+                            to="/dashboard/admin"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              <span className="tracking-wide">Dashboard Overview</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/category"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14-7H5m14 14H5" />
+                              </svg>
+                              <span className="tracking-wide">Categories</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/product"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                              </svg>
+                              <span className="tracking-wide">Products</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/orders-admin"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                              </svg>
+                              <span className="tracking-wide">Orders Management</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/user-management"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                              </svg>
+                              <span className="tracking-wide">User Management</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/payment-management"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                              </svg>
+                              <span className="tracking-wide">Payment Management</span>
+                            </div>
+                          </Link>
+
+                          <Link
+                            to="/dashboard/profile"
+                            className="flex items-center text-gray-700 hover:text-black hover:bg-black/5 px-4 py-3 text-sm transition-all duration-300 rounded-md group"
+                            onClick={() => setTimeout(() => setMobileMenuOpen(false), 200)}
+                            style={{ 
+                              fontFamily: "'Inter', sans-serif",
+                              fontWeight: '300',
+                              letterSpacing: '0.03em',
+                            }}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <svg className="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                              <span className="tracking-wide">My Profile</span>
+                            </div>
+                          </Link>
+                        </div>
                       )}
                       
                       {/* Logout Button - Mobile (when user is logged in) */}
@@ -1056,7 +1177,11 @@ function Header() {
                             <p className="font-medium text-gray-900 truncate">{user.email || user.name}</p>
                           </div>
                           <div className="p-4">
-                            <UserMenue close={handleUserMenu} />
+                            {isAdmin(user.role) ? (
+                              <AdminMenue close={handleUserMenu} />
+                            ) : (
+                              <UserMenue close={handleUserMenu} />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1081,8 +1206,8 @@ function Header() {
                   </button>
                 )}
 
-                {/* Wishlist Icon - Only when user is logged in */}
-                {user?.name && (
+                {/* Wishlist Icon - Only when user is logged in and not admin */}
+                {user?.name && !isAdmin(user.role) && (
                   <Link
                     to="/dashboard/wishlist"
                     className="relative p-2.5 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-black transition-all duration-300 rounded-full group"
@@ -1092,7 +1217,7 @@ function Header() {
                   </Link>
                 )}
 
-                {user?._id && (
+                {user?._id && !isAdmin(user.role) && (
                   <button
                     className="relative p-2.5 flex items-center justify-center border border-gray-200 hover:border-black hover:bg-black transition-all duration-300 rounded-full group"
                     onClick={() => setOpenCartSection(true)}
