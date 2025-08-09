@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import { 
     FaUser, 
     FaEnvelope, 
@@ -18,14 +19,48 @@ import {
     FaRupeeSign,
     FaSpinner,
     FaDownload,
-    FaClipboardList
+    FaClipboardList,
+    FaShieldAlt
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import Axios from '../utils/Axios';
 import SummaryApi from '../common/SummaryApi';
 import noCart from '../assets/noCart.jpg';
+import isAdmin from '../utils/isAdmin';
 
 const UserRefundManagement = () => {
+    const user = useSelector(state => state?.user?.user);
+
+    // Block admin users from accessing user refund dashboard
+    if (user && isAdmin(user.role)) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center max-w-md mx-auto p-8">
+                    <FaShieldAlt className="h-16 w-16 text-blue-500 mx-auto mb-6" />
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Admin Access Restricted</h2>
+                    <p className="text-lg text-gray-600 mb-6">
+                        This page is for regular users only. As an admin, please use the Admin Refund Management from your dashboard.
+                    </p>
+                    <div className="space-y-3">
+                        <button
+                            onClick={() => window.location.href = '/dashboard/admin/refund-management'}
+                            className="w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <FaMoneyBillWave />
+                            Go to Admin Refund Management
+                        </button>
+                        <button
+                            onClick={() => window.location.href = '/dashboard/admin'}
+                            className="w-full bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
+                        >
+                            Back to Admin Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedRefund, setSelectedRefund] = useState(null);
@@ -34,8 +69,6 @@ const UserRefundManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
-
-    const user = useSelector(state => state?.user?.user);
 
     // Fetch dashboard data
     const fetchDashboardData = async () => {

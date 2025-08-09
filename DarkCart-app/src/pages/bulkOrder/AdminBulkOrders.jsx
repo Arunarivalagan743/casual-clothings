@@ -179,72 +179,72 @@ const AdminBulkOrders = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-black tracking-tight font-['Playfair_Display'] mb-2">Bulk Order Management</h1>
-                <p className="text-gray-600 font-['Inter']">Manage and process bulk order requests from customers</p>
+            <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl font-bold text-black tracking-tight font-['Playfair_Display'] mb-2 leading-tight">Bulk Order Management</h1>
+                <p className="text-sm sm:text-base text-gray-600 font-['Inter']">Manage and process bulk order requests from customers</p>
             </div>
 
             {/* Analytics Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
                     <div className="flex items-center">
-                        <div className="p-3 bg-gray-100 rounded-lg">
-                            <FaClipboardList className="text-black text-xl" />
+                        <div className="p-2 sm:p-3 bg-gray-100 rounded-lg flex-shrink-0">
+                            <FaClipboardList className="text-black text-lg sm:text-xl" />
                         </div>
-                        <div className="ml-4">
-                            <h3 className="text-2xl font-bold text-black font-['Inter']">{analytics.totalOrders || 0}</h3>
-                            <p className="text-sm text-gray-600 font-['Inter']">Total Orders</p>
+                        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                            <h3 className="text-lg sm:text-2xl font-bold text-black font-['Inter'] leading-tight">{analytics.totalOrders || 0}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 font-['Inter'] truncate">Total Orders</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
                     <div className="flex items-center">
-                        <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                            <FaFilter className="text-yellow-600 text-xl" />
+                        <div className="p-2 sm:p-3 bg-yellow-50 rounded-lg border border-yellow-200 flex-shrink-0">
+                            <FaFilter className="text-yellow-600 text-lg sm:text-xl" />
                         </div>
-                        <div className="ml-4">
-                            <h3 className="text-2xl font-bold text-black font-['Inter']">{analytics.statusCounts?.Requested || 0}</h3>
-                            <p className="text-sm text-gray-600 font-['Inter']">Pending Review</p>
+                        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                            <h3 className="text-lg sm:text-2xl font-bold text-black font-['Inter'] leading-tight">{analytics.statusCounts?.Requested || 0}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 font-['Inter'] truncate">Pending Review</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
                     <div className="flex items-center">
-                        <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                            <FaCheck className="text-green-600 text-xl" />
+                        <div className="p-2 sm:p-3 bg-green-50 rounded-lg border border-green-200 flex-shrink-0">
+                            <FaCheck className="text-green-600 text-lg sm:text-xl" />
                         </div>
-                        <div className="ml-4">
-                            <h3 className="text-2xl font-bold text-black font-['Inter']">{analytics.statusCounts?.Approved || 0}</h3>
-                            <p className="text-sm text-gray-600 font-['Inter']">Approved</p>
+                        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                            <h3 className="text-lg sm:text-2xl font-bold text-black font-['Inter'] leading-tight">{analytics.statusCounts?.Approved || 0}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 font-['Inter'] truncate">Approved</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6 hover:shadow-xl transition-shadow duration-300">
                     <div className="flex items-center">
-                        <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-                            <FaTimes className="text-red-600 text-xl" />
+                        <div className="p-2 sm:p-3 bg-red-50 rounded-lg border border-red-200 flex-shrink-0">
+                            <FaTimes className="text-red-600 text-lg sm:text-xl" />
                         </div>
-                        <div className="ml-4">
-                            <h3 className="text-2xl font-bold text-black font-['Inter']">{analytics.statusCounts?.Rejected || 0}</h3>
-                            <p className="text-sm text-gray-600 font-['Inter']">Rejected</p>
+                        <div className="ml-3 sm:ml-4 min-w-0 flex-1">
+                            <h3 className="text-lg sm:text-2xl font-bold text-black font-['Inter'] leading-tight">{analytics.statusCounts?.Rejected || 0}</h3>
+                            <p className="text-xs sm:text-sm text-gray-600 font-['Inter'] truncate">Rejected</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-6 mb-8">
-                <div className="flex flex-wrap items-center gap-4">
+            <div className="bg-white rounded-lg shadow-lg border border-gray-100 p-4 sm:p-6 mb-6 sm:mb-8">
+                <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3 sm:gap-4">
                     <div className="flex items-center">
                         <FaFilter className="text-gray-400 mr-2" />
-                        <span className="text-sm font-semibold text-black font-['Inter']">Filter by status:</span>
+                        <span className="text-xs sm:text-sm font-semibold text-black font-['Inter'] whitespace-nowrap">Filter by status:</span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                         {['all', 'Requested', 'Approved', 'Rejected'].map(status => (
                             <button
                                 key={status}
@@ -252,7 +252,7 @@ const AdminBulkOrders = () => {
                                     setFilter(status);
                                     setPagination(prev => ({ ...prev, page: 1 }));
                                 }}
-                                className={`px-4 py-2 text-sm rounded-lg font-medium transition-all duration-300 font-['Inter'] ${
+                                className={`px-3 sm:px-4 py-2 text-xs sm:text-sm rounded-lg font-medium transition-all duration-300 font-['Inter'] whitespace-nowrap ${
                                     filter === status 
                                         ? 'bg-black text-white shadow-md' 
                                         : 'bg-gray-100 text-black hover:bg-gray-200'

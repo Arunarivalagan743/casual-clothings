@@ -105,12 +105,15 @@ function UserMenue({close}) {
                     <span className="text-sm font-medium group-hover:text-black font-['Inter']">Cancellations & Refunds</span>
                 </Link> */}
 
-                <Link onClick={handleClose} to="/dashboard/refund-dashboard" className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-all group w-full'>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 group-hover:text-black" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-sm font-medium group-hover:text-black font-['Inter']">Refund Dashboard</span>
-                </Link>
+                {/* Hide refund dashboard for admin users */}
+                {!isAdmin(user?.role) && (
+                    <Link onClick={handleClose} to="/dashboard/refund-dashboard" className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-all group w-full'>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 group-hover:text-black" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                        <span className="text-sm font-medium group-hover:text-black font-['Inter']">Refund Dashboard</span>
+                    </Link>
+                )}
 
                 <Link onClick={handleClose} to="/dashboard/my-custom-tshirts" className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-all group w-full'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 group-hover:text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
