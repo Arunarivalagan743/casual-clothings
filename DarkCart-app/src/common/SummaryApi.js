@@ -517,6 +517,37 @@ const SummaryApi = {
         url: '/api/return-product/admin/dashboard/stats',
         method: 'get'
     },
+    
+    // Bulk Order APIs
+    createBulkOrder: {
+        url: '/api/bulk-order/create',
+        method: 'post'
+    },
+    getUserBulkOrders: {
+        url: '/api/bulk-order/my-orders',
+        method: 'get'
+    },
+    getBulkOrderDetails: {
+        url: '/api/bulk-order/details',
+        method: 'get'
+    },
+    // Admin Bulk Order APIs
+    getAllBulkOrders: {
+        url: '/api/bulk-order/admin/all',
+        method: 'get'
+    },
+    updateBulkOrderStatus: {
+        url: '/api/bulk-order/admin/update-status',
+        method: 'put'
+    },
+    deleteBulkOrder: {
+        url: '/api/bulk-order/admin/delete',
+        method: 'delete'
+    },
+    getBulkOrderAnalytics: {
+        url: '/api/bulk-order/admin/analytics',
+        method: 'get'
+    },
 }
 
 export default SummaryApi;

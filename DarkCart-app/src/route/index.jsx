@@ -11,6 +11,7 @@ import PrivacyPolicy from "../pages/PrivacyPolicy";
 import TermsConditions from "../pages/TermsConditions";
 import Lookbook from "../pages/Lookbook";
 import Sustainability from "../pages/Sustainability";
+import Contact from "../components/Contact";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import ForgotPassword from "../pages/ForgotPassword";
@@ -61,6 +62,9 @@ import InventoryManagement from "../pages/InventoryManagement";
 import Sitemap from "../pages/Sitemap";
 import AdminContactManagement from "../pages/AdminContactManagement";
 import UserContactHistory from "../pages/UserContactHistory";
+import BulkOrderRequestForm from "../pages/bulkOrder/BulkOrderRequestForm";
+import UserBulkOrders from "../pages/bulkOrder/UserBulkOrders";
+import AdminBulkOrders from "../pages/bulkOrder/AdminBulkOrders";
 
 const router = createBrowserRouter([
     {
@@ -90,6 +94,10 @@ const router = createBrowserRouter([
             {
                 path:"/faq",
                 element : <FAQ/>
+            },
+            {
+                path:"/contact",
+                element : <Contact/>
             },
             {
                 path:"/shipping-returns",
@@ -177,6 +185,10 @@ const router = createBrowserRouter([
                 {
                     path:"my-custom-tshirts",
                     element:<MyCustomTshirts/>
+                },
+                {
+                    path:"bulk-orders",
+                    element:<UserBulkOrders/>
                 },
                 {
                     path:"admin",
@@ -269,6 +281,10 @@ const router = createBrowserRouter([
                     path:"contact-management",
                     element:<AdminPermission><AdminContactManagement/></AdminPermission>
                 },
+                {
+                    path:"bulk-order-management",
+                    element:<AdminPermission><AdminBulkOrders/></AdminPermission>
+                },
 
                 // Add catch-all for dashboard subroutes
                 {
@@ -327,6 +343,10 @@ const router = createBrowserRouter([
             {
                 path:"bundle/:bundleId",
                 element : <BundleDetail/>
+            },
+            {
+                path:"bulk-order/new",
+                element : <BulkOrderRequestForm/>
             },
           
             // Add catch-all route for any invalid URLs - THIS MUST BE LAST

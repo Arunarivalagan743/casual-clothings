@@ -69,6 +69,7 @@ function Footer() {
             <ul className="space-y-3">
               {[
                 { to: "/faq", label: "FAQ" },
+                { to: "/contact", label: "Contact Us" },
                 { to: "/shipping-returns", label: "Shipping & Returns" },
                 { to: "/privacy-policy", label: "Privacy Policy" },
                 { to: "/terms-conditions", label: "Terms & Conditions" },

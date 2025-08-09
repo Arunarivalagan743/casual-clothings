@@ -122,6 +122,13 @@ function UserMenue({close}) {
                     </svg>
                     <span className="text-sm font-medium group-hover:text-black font-['Inter']">My Custom T-Shirts</span>
                 </Link>
+
+                <Link onClick={handleClose} to="/dashboard/bulk-orders" className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-all group w-full'>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 group-hover:text-black" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V8zm0 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1v-2z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-sm font-medium group-hover:text-black font-['Inter']">My Bulk Orders</span>
+                </Link>
              
                 <Link onClick={handleClose} to="/dashboard/address" className='flex items-center gap-3 p-3 hover:bg-gray-50 rounded transition-all group w-full'>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-500 group-hover:text-black" viewBox="0 0 20 20" fill="currentColor">
@@ -206,9 +213,13 @@ function UserMenue({close}) {
                                 <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                                 <span className="text-sm font-medium">Cancellation Management</span>
                             </Link>
-                            <Link onClick={handleClose} to="/dashboard/refund-dashboard" className='flex items-center gap-2 p-2 hover:bg-gray-50 transition-all rounded text-gray-600 hover:text-black'>
+                            <Link onClick={handleClose} to="/dashboard/admin/refund-management" className='flex items-center gap-2 p-2 hover:bg-gray-50 transition-all rounded text-gray-600 hover:text-black'>
                                 <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
                                 <span className="text-sm font-medium">Refund Management</span>
+                            </Link>
+                            <Link onClick={handleClose} to="/dashboard/bulk-order-management" className='flex items-center gap-2 p-2 hover:bg-gray-50 transition-all rounded text-gray-600 hover:text-black'>
+                                <span className="w-1 h-1 bg-gray-400 rounded-full"></span>
+                                <span className="text-sm font-medium">Bulk Order Management</span>
                             </Link>
                           
                         </div>

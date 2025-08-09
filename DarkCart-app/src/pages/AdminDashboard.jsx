@@ -13,7 +13,8 @@ import {
     FaTshirt,
     FaWarehouse,
     FaUndo,
-    FaEnvelope
+    FaEnvelope,
+    FaBoxOpen
 } from 'react-icons/fa'
 
 function AdminDashboard() {
@@ -95,6 +96,11 @@ function AdminDashboard() {
             description: "Manage customer inquiries and respond to messages",
             path: "/dashboard/contact-management",
             icon: <FaEnvelope className="text-indigo-600" />
+        },{
+            title: "Bulk Order Management",
+            description: "Manage bulk orders and requests",
+            path: "/dashboard/bulk-order-management",
+            icon: <FaBoxOpen className="text-yellow-600" />
         }
     ]
 

@@ -392,6 +392,19 @@ function Header() {
                         Bundle Offers
                       </span>
                     </Link>
+
+                    <Link to="/bulk-order/new" className="flex items-center px-5 py-2.5 text-gray-700 hover:bg-black hover:text-white text-sm transition-all duration-300 group">
+                      <span 
+                        className="group-hover:translate-x-0.5 transition-transform duration-300"
+                        style={{ 
+                          fontFamily: "'Inter', sans-serif",
+                          fontWeight: '300',
+                          letterSpacing: '0.03em',
+                        }}
+                      >
+                        Bulk Orders
+                      </span>
+                    </Link>
                   
                   </div>
                 )}
