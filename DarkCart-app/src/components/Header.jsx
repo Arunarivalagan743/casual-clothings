@@ -885,6 +885,22 @@ function Header() {
                         >
                           Bundle Offers
                         </Link>
+
+                        <Link
+                          to="/bulk-order/new"
+                          className="flex items-center text-gray-600 hover:text-black hover:bg-black/5 pl-10 pr-5 py-2.5 text-sm transition-all duration-300"
+                          onClick={() => {
+                            setShowPrimeDealsDropdown(false);
+                            setTimeout(() => setMobileMenuOpen(false), 200);
+                          }}
+                          style={{ 
+                            fontFamily: "'Inter', sans-serif",
+                            fontWeight: '300',
+                            letterSpacing: '0.03em',
+                          }}
+                        >
+                          Bulk Order
+                        </Link>
                        
                       </div>
                     </div>
