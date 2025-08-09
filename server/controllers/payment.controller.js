@@ -1887,8 +1887,10 @@ export const verifyRazorpayPayment = async (req, res) => {
         // Get payment details from Razorpay
         const paymentDetails = await razorpayService.getPaymentDetails(razorpay_payment_id);
         
-        // Update order payment status if order_id is provided
+        // Note: In the new flow, orders are created after successful payment verification
+        // So this verification is mainly for webhook handling or legacy compatibility
         if (order_id) {
+            // Try to find and update existing order (for webhook handling)
             const updatedOrder = await orderModel.findOneAndUpdate(
                 { orderId: order_id },
                 {
@@ -1899,6 +1901,8 @@ export const verifyRazorpayPayment = async (req, res) => {
                 },
                 { new: true }
             );
+
+            // Note: Order might not exist yet if using new flow (order created after payment)
 
             // If this was a pending online payment, now clear the cart items and update stock
             if (updatedOrder && updatedOrder.pendingCartItems && updatedOrder.pendingCartItems.length > 0) {

@@ -656,8 +656,11 @@ export const onlinePaymentOrderController = async (req, res) => {
       // Create single order
       const generatedOrder = await orderModel.create([payload], { session });
 
-      // Update stock for each product and bundle - only for confirmed orders (not pending online payments)
-      const shouldUpdateStock = paymentMethod !== "Razorpay";
+      // Check if this is a post-payment order creation (payment already completed)
+      const isPostPaymentOrder = paymentStatus === "PAID" && paymentId && razorpayOrderId;
+      
+      // Update stock for post-payment orders or non-Razorpay orders (COD, etc.)
+      const shouldUpdateStock = isPostPaymentOrder || paymentMethod !== "Razorpay";
       
       if (shouldUpdateStock) {
         for (const item of list_items) {
@@ -719,13 +722,12 @@ export const onlinePaymentOrderController = async (req, res) => {
           }
         }
       } else {
-        // For online payments, we'll update stock later when payment is confirmed
-        console.log(`Stock updates will be deferred for online payment order ${payload.orderId}`);
+        // For pending online payments, we'll update stock later when payment is confirmed
+        console.log(`Stock updates will be deferred for pending online payment order ${payload.orderId}`);
       }
 
-      // Clear cart items only for confirmed orders (not for pending online payments)
-      // For online payments, cart items will be cleared when payment is confirmed
-      const shouldClearCart = paymentMethod !== "Razorpay";
+      // Clear cart items for post-payment orders or non-Razorpay orders (COD, etc.)
+      const shouldClearCart = isPostPaymentOrder || paymentMethod !== "Razorpay";
       
       if (shouldClearCart) {
         const orderedItemIds = list_items.map(item => item._id);

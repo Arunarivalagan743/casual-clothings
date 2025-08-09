@@ -279,20 +279,6 @@ const PaymentPage = () => {
     }
   }, [checkoutItems, estimatedDeliveryDate]);
 
-  // Function to cleanup cancelled orders
-  const cleanupCancelledOrder = async (orderId) => {
-    try {
-      await Axios({
-        url: `${SummaryApi.cleanupCancelledOrder.url}/${orderId}`,
-        method: SummaryApi.cleanupCancelledOrder.method
-      });
-      console.log(`Cleaned up cancelled order: ${orderId}`);
-    } catch (error) {
-      console.error('Failed to cleanup cancelled order:', error);
-      // Don't show error to user as this is background cleanup
-    }
-  };
-
   const handlePlaceOrder = async () => {
     // Validate selection
     if (!selectedAddressId) {
@@ -371,30 +357,24 @@ const PaymentPage = () => {
         }
       });
 
-      // Create order in our backend first (this will be in PENDING status initially)
-      const orderResponse = await Axios({
-        ...SummaryApi.onlinePaymentOrder,
-        data: {
-          list_items: preparedItems,
-          totalAmount: totalPrice + deliveryCharge,
-          addressId: selectedAddressId,
-          subTotalAmt: totalPrice,
-          deliveryCharge: deliveryCharge,
-          deliveryDistance: deliveryDistance,
-          estimatedDeliveryDate: estimatedDeliveryDate,
-          deliveryDays: deliveryDays,
-          quantity: totalQty,
-          paymentMethod: "Razorpay",
-        }
-      });
+      // Prepare order data but DON'T create order yet - only create after successful payment
+      const orderData = {
+        list_items: preparedItems,
+        totalAmount: totalPrice + deliveryCharge,
+        addressId: selectedAddressId,
+        subTotalAmt: totalPrice,
+        deliveryCharge: deliveryCharge,
+        deliveryDistance: deliveryDistance,
+        estimatedDeliveryDate: estimatedDeliveryDate,
+        deliveryDays: deliveryDays,
+        quantity: totalQty,
+        paymentMethod: "Razorpay",
+      };
 
-      if (!orderResponse.data.success) {
-        throw new Error(orderResponse.data.message || "Failed to create order");
-      }
-
-      const internalOrderId = orderResponse.data.data._id; // Internal MongoDB order ID
-      const orderIdForDisplay = orderResponse.data.data.orderId; // Display order ID
       const totalAmount = totalPrice + deliveryCharge;
+      
+      // Generate temporary order ID for Razorpay receipt (this won't be saved in DB yet)
+      const tempOrderId = `ORD-${Date.now()}`;
 
       // Dismiss the loading toast
       toast.dismiss("razorpay-processing");
@@ -406,52 +386,82 @@ const PaymentPage = () => {
         mobile: selectedAddress?.mobile || user?.mobile || ''
       };
 
-      // Process payment using Razorpay
+      // Process payment using Razorpay FIRST - only create order after successful payment
       await processPayment({
         amount: totalAmount,
-        orderId: orderIdForDisplay, // Use display order ID for receipt
+        orderId: tempOrderId, // Use temporary order ID for receipt
         customerDetails: customerDetails,
         notes: {
           orderType: 'ecommerce',
           itemCount: totalQty,
           deliveryCharge: deliveryCharge,
-          internalOrderId: internalOrderId
+          tempOrderId: tempOrderId
         },
-        onSuccess: (paymentData) => {
-          // Payment successful
-          console.log('Razorpay payment successful:', paymentData);
-          toast.success("Payment successful! Order placed.");
-          
-          // Remove selected items from sessionStorage only on success
-          sessionStorage.removeItem('selectedCartItems');
-          sessionStorage.removeItem('selectedCartItemsData');
-          
-          // Refresh cart only on success
-          setTimeout(() => {
-            fetchCartItems();
-          }, 1000);
-          
-          // Call handleOrder only on successful payment
-          handleOrder();
-          
-          navigate("/order-success", {
-            state: {
-              text: "Order",
-              orderDetails: {
-                orderId: orderIdForDisplay,
-                estimatedDeliveryDate: estimatedDeliveryDate,
-                deliveryDays: deliveryDays,
-                deliveryDistance: deliveryDistance,
-                totalAmount: totalAmount,
-                itemCount: totalQty,
-                paymentId: paymentData.paymentId,
-                paymentMethod: 'Razorpay'
-              }
-            },
-          });
+        onSuccess: async (paymentData) => {
+          try {
+            // Payment successful - NOW create the order in database
+            console.log('Razorpay payment successful:', paymentData);
+            toast.loading("Creating order...", { id: "creating-order" });
+            
+            // Add payment details to order data
+            const finalOrderData = {
+              ...orderData,
+              paymentId: paymentData.paymentId,
+              razorpayOrderId: paymentData.orderId,
+              paymentStatus: "PAID" // Mark as paid since payment is already successful
+            };
+            
+            // Now create the order in backend
+            const orderResponse = await Axios({
+              ...SummaryApi.onlinePaymentOrder,
+              data: finalOrderData
+            });
+
+            if (!orderResponse.data.success) {
+              throw new Error(orderResponse.data.message || "Failed to create order after payment");
+            }
+
+            const orderIdForDisplay = orderResponse.data.data.orderId; // Display order ID
+            
+            toast.dismiss("creating-order");
+            toast.success("Payment successful! Order placed.");
+            
+            // Remove selected items from sessionStorage only on success
+            sessionStorage.removeItem('selectedCartItems');
+            sessionStorage.removeItem('selectedCartItemsData');
+            
+            // Refresh cart only on success
+            setTimeout(() => {
+              fetchCartItems();
+            }, 1000);
+            
+            // Call handleOrder only on successful payment
+            handleOrder();
+            
+            navigate("/order-success", {
+              state: {
+                text: "Order",
+                orderDetails: {
+                  orderId: orderIdForDisplay,
+                  estimatedDeliveryDate: estimatedDeliveryDate,
+                  deliveryDays: deliveryDays,
+                  deliveryDistance: deliveryDistance,
+                  totalAmount: totalAmount,
+                  itemCount: totalQty,
+                  paymentId: paymentData.paymentId,
+                  paymentMethod: 'Razorpay'
+                }
+              },
+            });
+          } catch (orderError) {
+            console.error("Error creating order after successful payment:", orderError);
+            toast.dismiss("creating-order");
+            toast.error("Payment successful but order creation failed. Please contact support.");
+            // Note: Payment was successful but order creation failed - this needs manual handling
+          }
         },
         onFailure: (error) => {
-          // Payment failed or cancelled
+          // Payment failed or cancelled - NO order is created
           console.error("Razorpay payment failed:", error);
           
           // Determine if it was a cancellation vs failure
@@ -459,16 +469,12 @@ const PaymentPage = () => {
           
           if (isCancellation) {
             toast.error("Payment cancelled. You can try again.");
-            
-            // Cleanup the pending order and restore stock
-            if (internalOrderId) {
-              cleanupCancelledOrder(orderIdForDisplay);
-            }
           } else {
             toast.error("Payment failed. Please try again.");
           }
           
           // Reset processing state so user can retry
+          // No cleanup needed since no order was created
           setIsProcessing(false);
         }
       });
@@ -476,16 +482,14 @@ const PaymentPage = () => {
     } catch (error) {
       console.error("Razorpay payment error:", error);
       toast.dismiss("razorpay-processing");
+      toast.dismiss("creating-order");
       
-      // Cleanup the pending order for any error (including cancellation)
-      if (internalOrderId) {
-        cleanupCancelledOrder(orderIdForDisplay);
-      }
+      // No order cleanup needed since order is only created after successful payment
       
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
-        toast.error(error.message || "Payment failed. Please try again.");
+        toast.error(error.message || "Payment preparation failed. Please try again.");
       }
     } finally {
       setIsProcessing(false);
