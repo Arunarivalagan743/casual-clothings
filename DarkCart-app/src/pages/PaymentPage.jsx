@@ -279,6 +279,20 @@ const PaymentPage = () => {
     }
   }, [checkoutItems, estimatedDeliveryDate]);
 
+  // Function to cleanup cancelled orders
+  const cleanupCancelledOrder = async (orderId) => {
+    try {
+      await Axios({
+        url: `${SummaryApi.cleanupCancelledOrder.url}/${orderId}`,
+        method: SummaryApi.cleanupCancelledOrder.method
+      });
+      console.log(`Cleaned up cancelled order: ${orderId}`);
+    } catch (error) {
+      console.error('Failed to cleanup cancelled order:', error);
+      // Don't show error to user as this is background cleanup
+    }
+  };
+
   const handlePlaceOrder = async () => {
     // Validate selection
     if (!selectedAddressId) {
@@ -408,16 +422,18 @@ const PaymentPage = () => {
           console.log('Razorpay payment successful:', paymentData);
           toast.success("Payment successful! Order placed.");
           
-          // Remove selected items from sessionStorage
+          // Remove selected items from sessionStorage only on success
           sessionStorage.removeItem('selectedCartItems');
           sessionStorage.removeItem('selectedCartItemsData');
           
-          // Refresh cart
+          // Refresh cart only on success
           setTimeout(() => {
             fetchCartItems();
           }, 1000);
           
+          // Call handleOrder only on successful payment
           handleOrder();
+          
           navigate("/order-success", {
             state: {
               text: "Order",
@@ -435,18 +451,36 @@ const PaymentPage = () => {
           });
         },
         onFailure: (error) => {
-          // Payment failed
+          // Payment failed or cancelled
           console.error("Razorpay payment failed:", error);
-          toast.error("Payment failed. Please try again.");
           
-          // Optionally, you could update the order status to FAILED here
-          // or let the webhook handle it
+          // Determine if it was a cancellation vs failure
+          const isCancellation = error.message === 'Payment cancelled by user';
+          
+          if (isCancellation) {
+            toast.error("Payment cancelled. You can try again.");
+            
+            // Cleanup the pending order and restore stock
+            if (internalOrderId) {
+              cleanupCancelledOrder(orderIdForDisplay);
+            }
+          } else {
+            toast.error("Payment failed. Please try again.");
+          }
+          
+          // Reset processing state so user can retry
+          setIsProcessing(false);
         }
       });
 
     } catch (error) {
       console.error("Razorpay payment error:", error);
       toast.dismiss("razorpay-processing");
+      
+      // Cleanup the pending order for any error (including cancellation)
+      if (internalOrderId) {
+        cleanupCancelledOrder(orderIdForDisplay);
+      }
       
       if (error.response?.data?.message) {
         toast.error(error.response.data.message);

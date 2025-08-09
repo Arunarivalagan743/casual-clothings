@@ -295,6 +295,10 @@ const SummaryApi = {
         url: '/api/payment/razorpay/refund',
         method: 'post'
     },
+    cleanupCancelledOrder: {
+        url: '/api/payment/cleanup-cancelled',
+        method: 'delete'
+    },
     // Bundle API endpoints
     createBundle: {
         url: '/api/bundle/create',

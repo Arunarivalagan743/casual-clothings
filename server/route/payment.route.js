@@ -13,7 +13,8 @@ import {
     createRazorpayOrder,
     verifyRazorpayPayment,
     handleRazorpayWebhook,
-    initiateRazorpayRefund
+    initiateRazorpayRefund,
+    cleanupCancelledOrder
 } from '../controllers/payment.controller.js';
 import {
     processCompleteRefund,
@@ -66,6 +67,7 @@ paymentRouter.post('/razorpay/create-order', auth, createRazorpayOrder);
 paymentRouter.post('/razorpay/verify', auth, verifyRazorpayPayment);
 paymentRouter.post('/razorpay/webhook', handleRazorpayWebhook); // No auth needed for webhooks
 paymentRouter.post('/razorpay/refund', auth, admin, initiateRazorpayRefund);
+paymentRouter.delete('/cleanup-cancelled/:orderId', auth, cleanupCancelledOrder); // New cleanup route
 
 // Enhanced refund management routes
 paymentRouter.post('/refund/complete', auth, admin, processCompleteRefund);

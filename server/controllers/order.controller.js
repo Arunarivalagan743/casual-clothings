@@ -638,7 +638,7 @@ export const onlinePaymentOrderController = async (req, res) => {
       deliveryDistance: sanitizedDeliveryDistance,
       deliveryDays: deliveryDays || 0,
       deliveryCharge: finalDeliveryCharge, // Use calculated delivery charge
-      paymentStatus: "PAID", // Always PAID for online payments
+      paymentStatus: paymentMethod === "Razorpay" ? "PENDING" : "PAID", // PENDING for online payments, PAID for others
       paymentMethod: paymentMethod || "Online Payment",
       deliveryAddress: addressId,
       subTotalAmt: subTotalAmt,
@@ -656,83 +656,105 @@ export const onlinePaymentOrderController = async (req, res) => {
       // Create single order
       const generatedOrder = await orderModel.create([payload], { session });
 
-      // Update stock for each product and bundle
-      for (const item of list_items) {
-        const isProduct = !!(item.productId && (
-          (typeof item.productId === 'object' && item.productId._id) || 
-          (typeof item.productId === 'string')
-        ));
-        
-        const isBundle = !!(item.bundleId && (
-          (typeof item.bundleId === 'object' && item.bundleId._id) || 
-          (typeof item.bundleId === 'string')
-        ));
-        
-        if (isProduct) {
-          const productId = (typeof item.productId === 'object' && item.productId._id) ? item.productId._id : item.productId;
+      // Update stock for each product and bundle - only for confirmed orders (not pending online payments)
+      const shouldUpdateStock = paymentMethod !== "Razorpay";
+      
+      if (shouldUpdateStock) {
+        for (const item of list_items) {
+          const isProduct = !!(item.productId && (
+            (typeof item.productId === 'object' && item.productId._id) || 
+            (typeof item.productId === 'string')
+          ));
           
-          // If size is provided, update size-specific inventory
-          if (item.size) {
-            const sizeField = `sizes.${item.size}`;
-            const updateQuery = {
-              $inc: { 
-                // Update both the legacy stock field and the size-specific inventory
-                stock: -item.quantity,
-                [sizeField]: -item.quantity 
+          const isBundle = !!(item.bundleId && (
+            (typeof item.bundleId === 'object' && item.bundleId._id) || 
+            (typeof item.bundleId === 'string')
+          ));
+          
+          if (isProduct) {
+            const productId = (typeof item.productId === 'object' && item.productId._id) ? item.productId._id : item.productId;
+            
+            // If size is provided, update size-specific inventory
+            if (item.size) {
+              const sizeField = `sizes.${item.size}`;
+              const updateQuery = {
+                $inc: { 
+                  // Update both the legacy stock field and the size-specific inventory
+                  stock: -item.quantity,
+                  [sizeField]: -item.quantity 
+                }
+              };
+              
+              // If stock for this size becomes zero, remove it from availableSizes
+              const product = await ProductModel.findById(productId);
+              if (product && product.sizes && product.sizes[item.size] <= item.quantity) {
+                updateQuery.$pull = { availableSizes: item.size };
               }
-            };
-            
-            // If stock for this size becomes zero, remove it from availableSizes
-            const product = await ProductModel.findById(productId);
-            if (product && product.sizes && product.sizes[item.size] <= item.quantity) {
-              updateQuery.$pull = { availableSizes: item.size };
+              
+              await ProductModel.findByIdAndUpdate(
+                productId,
+                updateQuery,
+                { session, new: true }
+              );
+            } else {
+              // Fallback to legacy stock update
+              await ProductModel.findByIdAndUpdate(
+                productId,
+                { 
+                  $inc: { stock: -item.quantity } // Decrease stock by ordered quantity
+                },
+                { session, new: true }
+              );
             }
-            
-            await ProductModel.findByIdAndUpdate(
-              productId,
-              updateQuery,
-              { session, new: true }
-            );
-          } else {
-            // Fallback to legacy stock update
-            await ProductModel.findByIdAndUpdate(
-              productId,
+          } else if (isBundle) {
+            // Update bundle stock
+            const bundleId = (typeof item.bundleId === 'object' && item.bundleId._id) ? item.bundleId._id : item.bundleId;
+            await BundleModel.findByIdAndUpdate(
+              bundleId,
               { 
-                $inc: { stock: -item.quantity } // Decrease stock by ordered quantity
+                $inc: { stock: -item.quantity } // Decrease bundle stock by ordered quantity
               },
               { session, new: true }
             );
           }
-        } else if (isBundle) {
-          // Update bundle stock
-          const bundleId = (typeof item.bundleId === 'object' && item.bundleId._id) ? item.bundleId._id : item.bundleId;
-          await BundleModel.findByIdAndUpdate(
-            bundleId,
-            { 
-              $inc: { stock: -item.quantity } // Decrease bundle stock by ordered quantity
-            },
-            { session, new: true }
-          );
         }
+      } else {
+        // For online payments, we'll update stock later when payment is confirmed
+        console.log(`Stock updates will be deferred for online payment order ${payload.orderId}`);
       }
 
-      // Clear only the ordered items from user's cart
-      const orderedItemIds = list_items.map(item => item._id);
-      await CartProductModel.deleteMany(
-        { 
-          userId: userId, 
-          _id: { $in: orderedItemIds }
-        }, 
-        { session }
-      );
+      // Clear cart items only for confirmed orders (not for pending online payments)
+      // For online payments, cart items will be cleared when payment is confirmed
+      const shouldClearCart = paymentMethod !== "Razorpay";
       
-      // Update user's shopping_cart array to remove only ordered items
-      const remainingCartItems = await CartProductModel.find({ userId: userId }).session(session);
-      await UserModel.updateOne(
-        { _id: userId },
-        { shopping_cart: remainingCartItems.map(item => item._id) },
-        { session }
-      );
+      if (shouldClearCart) {
+        const orderedItemIds = list_items.map(item => item._id);
+        await CartProductModel.deleteMany(
+          { 
+            userId: userId, 
+            _id: { $in: orderedItemIds }
+          }, 
+          { session }
+        );
+        
+        // Update user's shopping_cart array to remove only ordered items
+        const remainingCartItems = await CartProductModel.find({ userId: userId }).session(session);
+        await UserModel.updateOne(
+          { _id: userId },
+          { shopping_cart: remainingCartItems.map(item => item._id) },
+          { session }
+        );
+      } else {
+        // For online payments, store the cart item IDs to clear later
+        await orderModel.findByIdAndUpdate(
+          payload._id,
+          { 
+            pendingCartItems: list_items.map(item => item._id),
+            paymentStatus: "PENDING"
+          },
+          { session }
+        );
+      }
 
       // Commit transaction
       await session.commitTransaction();

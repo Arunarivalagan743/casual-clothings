@@ -1889,15 +1889,102 @@ export const verifyRazorpayPayment = async (req, res) => {
         
         // Update order payment status if order_id is provided
         if (order_id) {
-            await orderModel.findOneAndUpdate(
+            const updatedOrder = await orderModel.findOneAndUpdate(
                 { orderId: order_id },
                 {
                     paymentStatus: "PAID",
                     paymentId: razorpay_payment_id,
                     razorpayOrderId: razorpay_order_id,
                     paymentMethod: "Razorpay"
-                }
+                },
+                { new: true }
             );
+
+            // If this was a pending online payment, now clear the cart items and update stock
+            if (updatedOrder && updatedOrder.pendingCartItems && updatedOrder.pendingCartItems.length > 0) {
+                try {
+                    // Import required models
+                    const CartProductModel = (await import('../models/cartProduct.model.js')).default;
+                    const UserModel = (await import('../models/users.model.js')).default;
+                    const ProductModel = (await import('../models/product.model.js')).default;
+                    const BundleModel = (await import('../models/bundles.js')).default;
+                    
+                    // Clear the cart items that were pending
+                    await CartProductModel.deleteMany({
+                        userId: updatedOrder.userId,
+                        _id: { $in: updatedOrder.pendingCartItems }
+                    });
+
+                    // Update user's shopping_cart array
+                    const remainingCartItems = await CartProductModel.find({ userId: updatedOrder.userId });
+                    await UserModel.updateOne(
+                        { _id: updatedOrder.userId },
+                        { shopping_cart: remainingCartItems.map(item => item._id) }
+                    );
+
+                    // Now update stock for all items in the order
+                    for (const item of updatedOrder.items) {
+                        const isProduct = !!(item.productId && item.itemType === 'product');
+                        const isBundle = !!(item.bundleId && item.itemType === 'bundle');
+                        
+                        if (isProduct) {
+                            const productId = (typeof item.productId === 'object' && item.productId._id) 
+                                ? item.productId._id : item.productId;
+                            
+                            // If size is provided, update size-specific inventory
+                            if (item.size) {
+                                const sizeField = `sizes.${item.size}`;
+                                const updateQuery = {
+                                    $inc: { 
+                                        stock: -item.quantity,
+                                        [sizeField]: -item.quantity 
+                                    }
+                                };
+                                
+                                // If stock for this size becomes zero, remove it from availableSizes
+                                const product = await ProductModel.findById(productId);
+                                if (product && product.sizes && product.sizes[item.size] <= item.quantity) {
+                                    updateQuery.$pull = { availableSizes: item.size };
+                                }
+                                
+                                await ProductModel.findByIdAndUpdate(
+                                    productId,
+                                    updateQuery,
+                                    { new: true }
+                                );
+                            } else {
+                                // Fallback to legacy stock update
+                                await ProductModel.findByIdAndUpdate(
+                                    productId,
+                                    { $inc: { stock: -item.quantity } },
+                                    { new: true }
+                                );
+                            }
+                        } else if (isBundle) {
+                            // Update bundle stock
+                            const bundleId = (typeof item.bundleId === 'object' && item.bundleId._id) 
+                                ? item.bundleId._id : item.bundleId;
+                            
+                            await BundleModel.findByIdAndUpdate(
+                                bundleId,
+                                { $inc: { stock: -item.quantity } },
+                                { new: true }
+                            );
+                        }
+                    }
+
+                    // Clear the pendingCartItems from the order
+                    await orderModel.findByIdAndUpdate(
+                        updatedOrder._id,
+                        { $unset: { pendingCartItems: 1 } }
+                    );
+
+                    console.log(`Cleared ${updatedOrder.pendingCartItems.length} cart items and updated stock after successful payment for order ${order_id}`);
+                } catch (cartError) {
+                    console.error("Error clearing cart items and updating stock after payment:", cartError);
+                    // Don't fail the payment verification due to cart clearing issues
+                }
+            }
         }
         
         return res.status(200).json({
@@ -2039,9 +2126,95 @@ const handlePaymentFailure = async (paymentEntity) => {
             });
             
             console.log(`Payment failed for order ${order.orderId}`);
+            
+            // Note: For failed payments, we keep the order record but don't clear cart items
+            // The cart items remain available for the user to retry payment
         }
     } catch (error) {
         console.error("Error handling payment failure:", error);
+    }
+};
+
+// Helper function to clean up cancelled orders
+export const cleanupCancelledOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const userId = req.userId;
+        
+        // Find the order
+        const order = await orderModel.findOne({
+            orderId: orderId,
+            userId: userId,
+            paymentStatus: { $in: ["PENDING", "FAILED"] }
+        });
+        
+        if (!order) {
+            return res.status(404).json({
+                success: false,
+                message: "No pending/failed order found"
+            });
+        }
+        
+        // For cancelled orders, we can optionally delete them or just mark as cancelled
+        await orderModel.findByIdAndUpdate(order._id, {
+            paymentStatus: "CANCELLED",
+            orderStatus: "CANCELLED"
+        });
+        
+        // Restore stock for cancelled orders
+        if (order.items && order.items.length > 0) {
+            const ProductModel = (await import('../models/product.model.js')).default;
+            const BundleModel = (await import('../models/bundles.js')).default;
+            
+            for (const item of order.items) {
+                if (item.itemType === 'product' && item.productId) {
+                    // Restore product stock
+                    const productId = (typeof item.productId === 'object' && item.productId._id) 
+                        ? item.productId._id : item.productId;
+                    
+                    if (item.size) {
+                        // Restore size-specific stock
+                        const sizeField = `sizes.${item.size}`;
+                        await ProductModel.findByIdAndUpdate(
+                            productId,
+                            { 
+                                $inc: { 
+                                    stock: item.quantity,
+                                    [sizeField]: item.quantity 
+                                }
+                            }
+                        );
+                    } else {
+                        // Restore general stock
+                        await ProductModel.findByIdAndUpdate(
+                            productId,
+                            { $inc: { stock: item.quantity } }
+                        );
+                    }
+                } else if (item.itemType === 'bundle' && item.bundleId) {
+                    // Restore bundle stock
+                    const bundleId = (typeof item.bundleId === 'object' && item.bundleId._id) 
+                        ? item.bundleId._id : item.bundleId;
+                    
+                    await BundleModel.findByIdAndUpdate(
+                        bundleId,
+                        { $inc: { stock: item.quantity } }
+                    );
+                }
+            }
+        }
+        
+        return res.json({
+            success: true,
+            message: "Order cancelled and stock restored"
+        });
+        
+    } catch (error) {
+        console.error("Error cleaning up cancelled order:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to cleanup cancelled order"
+        });
     }
 };
 

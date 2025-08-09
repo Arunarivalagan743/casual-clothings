@@ -109,6 +109,11 @@ const orderSchema = mongoose.Schema({
         type: String,
         default: ""
     },
+    // Store cart item IDs for pending online payments (to clear later when payment confirms)
+    pendingCartItems: [{
+        type: mongoose.Schema.ObjectId,
+        ref: 'cartProduct'
+    }],
     paymentMethod: {
         type: String,
         default: "Online Payment"
