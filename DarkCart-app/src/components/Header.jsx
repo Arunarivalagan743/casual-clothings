@@ -201,6 +201,7 @@ function Header() {
 
   const handleLoginNavigate = () => {
     if (!user?._id) {
+      navigate("/login")
       return;
     }
     navigate("/user-menu-mobile");
