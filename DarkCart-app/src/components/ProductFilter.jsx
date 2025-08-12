@@ -71,29 +71,7 @@ const ProductFilter = ({ filters, onFilterChange, showGenderFilter = true, initi
                     </div>
                     
                     {/* Quick Price Ranges */}
-                    <div className="grid grid-cols-2 gap-2 mt-3">
-                        {[
-                            { label: "Under ₹500", min: "", max: "500" },
-                            { label: "₹500-₹1000", min: "500", max: "1000" },
-                            { label: "₹1000-₹2000", min: "1000", max: "2000" },
-                            { label: "Above ₹2000", min: "2000", max: "" }
-                        ].map((range) => (
-                            <button
-                                key={range.label}
-                                onClick={() => {
-                                    onFilterChange('minPrice', range.min);
-                                    onFilterChange('maxPrice', range.max);
-                                }}
-                                className={`px-3 py-2 text-xs rounded-lg border transition-all duration-200 ${
-                                    filters.minPrice === range.min && filters.maxPrice === range.max
-                                        ? 'bg-black text-white border-black'
-                                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50'
-                                }`}
-                            >
-                                {range.label}
-                            </button>
-                        ))}
-                    </div>
+                    
                 </div>
             </div>
 
