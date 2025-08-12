@@ -199,6 +199,13 @@ function Header() {
         }
   }
 
+  const handleLoginNavigate = () => {
+    if (!user?._id) {
+      return;
+    }
+    navigate("/user-menu-mobile");
+  };
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
