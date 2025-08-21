@@ -38,6 +38,38 @@ function Footer() {
             </div>
           </div>
 
+          {/* Development Team Section */}
+          <div className="space-y-6">
+            <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
+              <span className="inline-block pr-4 relative z-10 bg-gradient-to-b from-white to-gray-50 font-['Playfair_Display']">Development Team</span>
+              <span className="absolute left-0 bottom-0 w-10 h-0.5 bg-black"></span>
+            </h3>
+            <ul className="space-y-3">
+             
+              <li>
+                <a href="https://www.linkedin.com/in/gowtham-v-cse/" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins']">
+                  <span className="font-semibold mr-2">Gowtham V</span>
+                  <span className="text-xs text-gray-500 mr-2">| Full Stack Developer</span>
+                  
+                </a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/in/anirudh-t-b5b26a2aa/" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins']">
+                  <span className="font-semibold mr-2">Anirudh T</span>
+                  <span className="text-xs text-gray-500 mr-2">| Full Stack Developer</span>
+                  
+                </a>
+              </li>
+               <li>
+                <a href="https://www.linkedin.com/in/arun-a-25b6a5289" target="_blank" rel="noopener noreferrer" className="flex items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins']">
+                  <span className="font-semibold mr-2">Arun A</span>
+                  <span className="text-xs text-gray-500 mr-2">| Full Stack Developer</span>
+                 
+                </a>
+              </li>
+            </ul>
+          </div>
+
           {/* Quick Links */}
           <div className="space-y-6">
             <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
