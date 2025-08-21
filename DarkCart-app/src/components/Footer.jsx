@@ -24,8 +24,9 @@ function Footer() {
 
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand Section */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          
+          {/* About Us Section */}
           <div className="space-y-6">
             <div className="flex flex-col">
               <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
@@ -38,7 +39,7 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Shop & Explore Section */}
           <div className="space-y-6">
             <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
               <span className="inline-block pr-4 relative z-10 bg-gradient-to-b from-white to-gray-50 font-['Playfair_Display']">Shop & Explore</span>
@@ -60,7 +61,7 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Customer Care Section */}
           <div className="space-y-6">
             <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
               <span className="inline-block pr-4 relative z-10 bg-gradient-to-b from-white to-gray-50 font-['Playfair_Display']">Customer Care</span>
@@ -84,7 +85,7 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Get in Touch Section */}
           <div className="space-y-6">
             <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative">
               <span className="inline-block pr-4 relative z-10 bg-gradient-to-b from-white to-gray-50 font-['Playfair_Display']">Get in Touch</span>
@@ -97,14 +98,43 @@ function Footer() {
                 { icon: FaEnvelope, text: "casualclothings2024@gmail.com" },
               ].map(({ icon: Icon, text }, idx) => (
                 <div key={idx} className="group flex items-start space-x-3 text-gray-600 hover:text-gray-900 transition-colors duration-300">
-                  <div className="p-2 bg-white rounded-md shadow-sm border border-gray-100 flex-shrink-0">
-                    <Icon className="text-gray-500 group-hover:text-black transition-colors duration-300" />
+                  <div className="p-2 bg-white rounded-md shadow-sm border border-gray-100 flex-shrink-0 mt-0.5">
+                    <Icon className="text-gray-500 group-hover:text-black transition-colors duration-300 text-sm" />
                   </div>
-                  <span className="text-sm font-['Poppins']">{text}</span>
+                  <span className="text-sm font-['Poppins'] leading-relaxed">{text}</span>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Development Team Section - Full width on mobile, spans 2 columns on larger screens */}
+          <div className="space-y-6 sm:col-span-2 lg:col-span-4">
+            <h3 className="font-serif italic text-lg text-gray-900 mb-4 border-b border-gray-200 pb-2 relative text-center lg:text-left">
+              <span className="inline-block pr-4 relative z-10 bg-gradient-to-b from-white to-gray-50 font-['Playfair_Display']">Development Team</span>
+              <span className="absolute left-1/2 lg:left-0 bottom-0 w-10 h-0.5 bg-black transform -translate-x-1/2 lg:translate-x-0"></span>
+            </h3>
+            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6 lg:gap-12">
+              <div className="text-center sm:text-left">
+                <a href="https://www.linkedin.com/in/gowtham-v-cse/" target="_blank" rel="noopener noreferrer" className="flex flex-col sm:flex-row items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins'] group">
+                  <span className="font-semibold mb-1 sm:mb-0 sm:mr-2">Gowtham V</span>
+                  <span className="text-xs text-gray-500">Full Stack Developer</span>
+                </a>
+              </div>
+              <div className="text-center sm:text-left">
+                <a href="https://www.linkedin.com/in/anirudh-t-b5b26a2aa/" target="_blank" rel="noopener noreferrer" className="flex flex-col sm:flex-row items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins'] group">
+                  <span className="font-semibold mb-1 sm:mb-0 sm:mr-2">Anirudh T</span>
+                  <span className="text-xs text-gray-500">Full Stack Developer</span>
+                </a>
+              </div>
+              <div className="text-center sm:text-left">
+                <a href="https://www.linkedin.com/in/arun-a-25b6a5289" target="_blank" rel="noopener noreferrer" className="flex flex-col sm:flex-row items-center text-gray-700 hover:text-blue-700 transition-colors font-['Poppins'] group">
+                  <span className="font-semibold mb-1 sm:mb-0 sm:mr-2">Arun A</span>
+                  <span className="text-xs text-gray-500">Full Stack Developer</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 

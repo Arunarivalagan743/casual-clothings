@@ -91,10 +91,10 @@ const OrderDetailsModal = ({ order, onClose, isLoading }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-6">
         {/* Header styled like the invoice */}
-        <div className="text-center mb-6">
+        <div className="text-center border-b border-gray-200 pb-4 mb-4">
           <h1 className="text-2xl font-bold">Casual Clothing Fashion</h1>
           <p className="text-sm text-gray-600">Sivsakthi Nagar, 5th Street, Tirupur, Tamil Nadu - 641604</p>
-          <p className="text-sm text-gray-600">Phone: +91 9442955929 | Email: casualclothing787@gmail.com</p>
+          <p className="text-sm text-gray-600">Phone: +91 9442955929 | Email: casualclothings2024@gmail.com</p>
           <p className="text-sm text-gray-600">GST: 33ABCDE1234F1Z5</p>
           
           <div className="mt-6 border-b border-gray-200 pb-2">

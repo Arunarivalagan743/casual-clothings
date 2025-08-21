@@ -450,7 +450,7 @@ function Contact() {
         
           <div className="bg-white rounded-xl shadow-lg p-4 md:p-8 relative overflow-hidden border border-gray-100">
             {/* Background pattern */}
-            <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iLjA1Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00bTAtMTZjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00bTE2IDE2YzAtMi4yIDEuOC00IDQtNHM0IDEuOCA0IDQtMS44IDQtNCA0LTQtMS44LTQtNG0tMTYtMTZjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00bS04IDhWMGg0djh6bTAgNDB2LThoNHY4em0wLTI0di04aDR2OHoiLz48L2c+PC9nPjwvc3ZnPg==')] bg-[length:30px_30px] pointer-events-none"></div>
+            <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iLjA1Ij48cGF0aCBkPSJNMzYgMzRjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00bTAtMTZjMC0yLjIgMS44LTQgNC00czQgMS44IDQgNC0xLjggNC00IDQtNC0xLjgtNC00bS04IDhWMGg0djh6bTAgNDB2LThoNHY4em0wLTI0di04aDR2OHoiLz48L2c+PC9nPjwvc3ZnPg==')] bg-[length:30px_30px] pointer-events-none"></div>
 
             <div className="flex flex-col md:flex-row gap-8 relative z-10 w-full">
               {/* Contact form with Redux auth check */}
@@ -472,10 +472,10 @@ function Contact() {
                     <div>
                       <h4 className="font-bold text-base font-['Playfair_Display'] text-gray-800">Email</h4>
                       <a 
-                        href="mailto:casualclothing787@gmail.com" 
+                        href="mailto:casualclothings2024@gmail.com" 
                         className="text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center gap-1 font-['Poppins'] group-hover:underline"
                       >
-                      casualclothing787@gmail.com
+                        casualclothings2024@gmail.com
                       </a>
                     </div>
                   </div>
