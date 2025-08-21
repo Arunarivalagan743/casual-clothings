@@ -243,40 +243,41 @@ const CustomTshirtRequestsAdmin = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-3 sm:p-6 bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <FaTshirt className="text-3xl text-black" />
-            <h1 className="text-3xl font-bold text-gray-900">Custom T-Shirt Requests</h1>
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <FaTshirt className="text-3xl text-black flex-shrink-0" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 truncate">Custom T-Shirt Requests</h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:flex-shrink-0">
             <button
               onClick={exportToCSV}
-              className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+              className="flex items-center justify-center gap-2 bg-black text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors text-sm sm:text-base whitespace-nowrap"
             >
-              <FaDownload />
-              Export CSV
+              <FaDownload className="flex-shrink-0" />
+              <span className="hidden sm:inline">Export CSV</span>
+              <span className="sm:hidden">Export</span>
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+              className="flex items-center justify-center gap-2 bg-blue-500 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base whitespace-nowrap"
             >
-              <FaCog />
-              Refresh
+              <FaCog className="flex-shrink-0" />
+              <span>Refresh</span>
             </button>
           </div>
         </div>
 
         {/* Status Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-6">
           {statusOptions.map(option => (
-            <div key={option.value} className="bg-white p-4 rounded-lg shadow-sm border">
+            <div key={option.value} className="bg-white p-3 sm:p-4 rounded-lg shadow-sm border">
               <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${option.color} text-white`}>
                 {option.label}
               </div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900">
                 {option.value === 'all' 
                   ? Object.values(statusCounts).reduce((sum, count) => sum + count, 0)
                   : statusCounts[option.value] || 0

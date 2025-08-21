@@ -4,23 +4,51 @@ import UserModel from "../models/users.model.js";
 export const addAddressController = async (req, res) => {
     try {
         const userId = req.userId; // Assuming user ID is stored in req.user
+        
+        console.log('=== ADD ADDRESS DEBUG START ===');
+        console.log('User ID:', userId);
+        console.log('Request body:', req.body);
+        
         // Validate request body
         const { address_line, city, state, pincode, country, mobile, addIframe } = req.body;
 
+        // Basic validation
+        if (!address_line || !city || !state || !pincode || !country) {
+            console.log('Validation failed: Missing required fields');
+            return res.status(400).json({ 
+                message: "Missing required fields: address_line, city, state, pincode, country", 
+                error: true,
+                success: false 
+            });
+        }
+
+        if (!userId) {
+            console.log('Validation failed: No user ID');
+            return res.status(401).json({ 
+                message: "User not authenticated", 
+                error: true,
+                success: false 
+            });
+        }
         
         // Create a new address
-        const newAddress = new AddressModel({
+        const addressData = {
             address_line,
             city,
             state,
             pincode,
             country,
-            mobile,
+            mobile: mobile || null,
             userId: userId, // Associate the address with the user
             addIframe: addIframe || "",  
-        });
-
+        };
+        
+        console.log('Address data to save:', addressData);
+        
+        const newAddress = new AddressModel(addressData);
         const savedAddress = await newAddress.save();
+        
+        console.log('Address saved successfully:', savedAddress._id);
         
         const addAddressId = await UserModel.findByIdAndUpdate(userId,{
             $push: { 
@@ -28,6 +56,8 @@ export const addAddressController = async (req, res) => {
             }
         });
         
+        console.log('User updated with address ID:', addAddressId ? 'Success' : 'Failed');
+        console.log('=== ADD ADDRESS DEBUG END ===');
 
         return res.status(201).json({
             message: "Address added successfully",
@@ -37,7 +67,18 @@ export const addAddressController = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).json({ message: "Error adding address", error:true,success:false });
+        console.log('=== ADD ADDRESS ERROR START ===');
+        console.log('Error message:', error.message);
+        console.log('Error stack:', error.stack);
+        console.log('Error details:', error);
+        console.log('=== ADD ADDRESS ERROR END ===');
+        
+        res.status(500).json({ 
+            message: "Error adding address", 
+            error: true,
+            success: false,
+            details: error.message 
+        });
     }
 };
 
