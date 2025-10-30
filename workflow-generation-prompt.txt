@@ -1,0 +1,55 @@
+GEMINI PROMPT FOR CASUAL CLOTHINGS E-COMMERCE WORKFLOW DIAGRAM
+
+=================================================================
+
+Create a professional black and white workflow diagram for an e-commerce platform called "Casual Clothings" with the following specifications:
+
+STYLE REQUIREMENTS:
+- Black and white only (no colors)
+- Clean, professional business diagram style
+- Use rectangles for processes, diamonds for decisions, circles for start/end
+- Clear arrows showing flow direction
+- Readable fonts and proper spacing
+- Modern, minimalist design approach
+
+WORKFLOW COMPONENTS TO INCLUDE:
+
+1. USER REGISTRATION/LOGIN FLOW:
+   Start → User Registration/Login → JWT Authentication → Email Verification → User Dashboard
+
+2. PRODUCT BROWSING FLOW:
+   Homepage → Product Categories → Product Filters (Size/Price) → Product Details → Size Selection
+
+3. SHOPPING CART FLOW:
+   Add to Cart → Cart Validation → Size/Quantity Check → Cart Summary → Wishlist Option
+
+4. CHECKOUT PROCESS:
+   Cart Review → Address Selection → Payment Method → Razorpay Integration → Order Confirmation
+
+5. ORDER MANAGEMENT:
+   Order Placed → Payment Verification → Inventory Update → Order Tracking → Delivery Status
+
+6. ADMIN WORKFLOW:
+   Admin Login → Admin Dashboard → User Management → Product Management → Order Management → Analytics
+
+DECISION POINTS TO SHOW:
+- Is user authenticated? (Yes/No)
+- Is product in stock? (Yes/No)
+- Payment successful? (Yes/No)
+- Is user admin? (Yes/No)
+
+TECHNICAL COMPONENTS TO HIGHLIGHT:
+- JWT Token Validation
+- MongoDB Database Operations
+- Razorpay Payment Gateway
+- Email Notifications
+- Stock Validation
+- Size-based Pricing
+
+LAYOUT SUGGESTION:
+- Horizontal flow from left to right
+- Multiple parallel processes where applicable
+- Clear separation between user flow and admin flow
+- Start and end points clearly marked
+
+Please create a comprehensive workflow diagram that shows the complete user journey from registration to order completion, including both customer and admin perspectives, in a professional black and white style suitable for technical documentation.
